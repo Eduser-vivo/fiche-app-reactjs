@@ -51,6 +51,7 @@ export default function Login(props) {
     const [userName, setUserName] = useState("");
     const [password, setPassword] = useState("");
     const { setAuthTokens } = useAuth();
+    const referer = props.location.state.referer || '/';
 
 
     function postLogin() {
@@ -58,9 +59,10 @@ export default function Login(props) {
         axios.post(url, { username:userName, password:password })
             .then(response =>{
                 if(response.status === 200){
-                    setAuthTokens(response.data);
+                    const token = response["data"];
+                    setAuthTokens(token);
                     setLoggedIn(true);
-                    console.log(response["data"]);
+                    console.log(token);
                     
                 }else{
                     setIsError(true);
@@ -70,7 +72,7 @@ export default function Login(props) {
     }
 
     if(isLoggedIn){
-        return <Redirect to="/" />;
+        return <Redirect to={referer} />;
     }
 
     function handleSubmit(e) {
@@ -85,7 +87,7 @@ export default function Login(props) {
                 <Avatar className={classes.avatar}>
                 </Avatar>
                 <Typography component="h1" variant="h5">
-                    Sign in
+                    Connexion
         </Typography>
 
                 {isError ?
@@ -121,7 +123,7 @@ export default function Login(props) {
                     />
                     <FormControlLabel
                         control={<Checkbox value="remember" color="primary" />}
-                        label="Remember me"
+                        label="Se souvenir"
                     />
                     <Button
                         type="submit"
@@ -131,17 +133,17 @@ export default function Login(props) {
                         className={classes.submit}
                         onClick= {postLogin}
                     >
-                        Sign In
+                        Se connecter
           </Button>
                     <Grid container>
                         <Grid item xs>
                             <Link to="">
-                                Forgot password?
+                                Mot de passe oublier?
                              </Link>
                         </Grid>
                         <Grid item>
-                            Don't have an account?
-                            <Link to="/signup"> Sign UP</Link>
+                           Vous n'avez pas de compte ?
+                            <Link to="/signup"> S'inscrire</Link>
                         </Grid>
                     </Grid>
                 </form>

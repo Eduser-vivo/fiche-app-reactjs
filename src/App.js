@@ -31,7 +31,7 @@ class App extends React.Component {
       <AuthContext.Provider value={{authTokens:this.state.authTokens, setAuthTokens: setTokens}} >
         <BrowserRouter>
           <div>
-            <TopBar/>
+            <TopBar />
             <Switch>
               <Route path="/login" component={Login} />
               <Route path="/signup" component={Signup} />

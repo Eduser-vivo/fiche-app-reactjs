@@ -4,15 +4,15 @@ import { useAuth } from './../auth/auth';
 
 
 function PrivateRoute ({ component: Component, ...rest }){
-    const isAuthenticated = useAuth();
+    const { authTokens } = useAuth();
     return(
         <Route
              {...rest} 
              render={props =>
-                isAuthenticated ? (
+                authTokens ? (
             <Component {...props} />
             ):(
-            <Redirect to="/login" />
+            <Redirect to={{ pathname:"/login", state: {referer: props.location} }} />
             )
         }
      />
