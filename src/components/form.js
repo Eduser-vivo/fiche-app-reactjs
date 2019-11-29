@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import {Redirect} from 'react-router-dom';
+import AuthService from '../auth/auth'; 
 
 function dateInit(){
     const dateJ = new Date();
@@ -21,6 +22,7 @@ export default class Form extends React.Component{
             motif: '',
             lieu: '',
             dateF: dateInit(),
+            utilisateur_id: AuthService.getUserId(),
             redirection: false,
             fiches: []
         };
@@ -40,6 +42,7 @@ export default class Form extends React.Component{
 
     handleSubmit(event) {
         event.preventDefault();
+        const user = this.state.utilisateur_id;
        const data = {
            signataire : this.state.signataire,
            adresse : this.state.adresse,
@@ -47,19 +50,20 @@ export default class Form extends React.Component{
            montant: parseInt(this.state.montant),
            motif : this.state.motif,
            lieu : this.state.lieu,
-           date : this.state.dateF
+           date : this.state.dateF,
+           utilisateur_id : user,
        };
         console.log(data);
         
-        const url = "http://localhost:8000/api/fiches";
-        axios.post(url, data)
+        const url = AuthService.getFiche();
+        axios.post(url, data, AuthService.getAuthHeader())
             .then(response => {this.setState({ fiches: response.data, redirection: true})})
             .catch(error => {console.log(error)});
     }
 
     render() {
         const { fiches } = this.state;
-        console.log(fiches);
+        console.log(this.state.utilisateur_id);
         const {redirection } = this.state;
         if(redirection){
             return <Redirect to={{pathname:`/fiche/${fiches.id}`, state:{fiche:fiches} }} />

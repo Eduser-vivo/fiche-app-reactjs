@@ -45,16 +45,16 @@ class App extends React.Component {
       <AuthContext.Provider value={{ authTokens: authJoker, setAuthTokens: setTokens}} >
         <BrowserRouter>
           <div>
-            <TopBar isLog={isLog} />
+               <TopBar isLog={isLog} />
             <Switch>
-              <Route path="/login" component={Login} />
-              <Route path="/logout" component={Logout} />
-              <Route path="/signup" component={Signup} />
+              <Route path="/login" component={Login} exact />
+              <Route path="/logout" component={Logout} exact />
+              <Route path="/signup" component={Signup} exact />
               <PrivateRoute path="/" component={Acceuil} exact />
-              <PrivateRoute path="/filtre" component={Filtre} />
-              <PrivateRoute path="/nouvelle-fiche" component={Form} />
-              <PrivateRoute path="/fiche/:id" component={Fiche} />
-              <PrivateRoute path="/edit/:id" component={Edit} />
+              <PrivateRoute path="/filtre" component={Filtre} exact />
+              <PrivateRoute path="/nouvelle-fiche" component={Form} exact />
+              <PrivateRoute path="/fiche/:id" component={Fiche} exact />
+              <PrivateRoute path="/edit/:id" component={Edit} exact />
               <Route component={Error} />
             </Switch>
           </div>

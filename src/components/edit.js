@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import {Redirect} from 'react-router-dom';
+import AuthService from '../auth/auth'; 
 
 function dateInit() {
     const dateJ = new Date();
@@ -52,7 +53,7 @@ export default class Edit extends React.Component{
         };
         console.log(data);
 
-        const url = "/fiche-app/public/index.php/api/fiches/"+this.state.id;
+        const url = AuthService.getFiche()+this.state.id;
         axios.put(url, data)
             .then(response => {this.setState({ fiches: response.data, redirection: true })})
             .catch(error => { console.log(error) });

@@ -31,8 +31,8 @@ export default function TopAppBar(props) {
                         <NavLink to="/nouvelle-fiche" style={{color:"white", textDecoration:"none"}}><Button color="inherit"> Nouvelle fiche </Button></NavLink>      
                     </Typography>
                     {isLog ?
-                    (<NavLink to="/logout" style={{ color: "white", textDecoration: "none" }}><Button color="inherit">Deconnexion</Button></NavLink>):
-                   (<NavLink to={{ pathname: "/login", state: { referer: '' } }}  style={{ color: "white", textDecoration: "none" }}><Button color="inherit">Connexion</Button></NavLink>)
+                    (<NavLink to="/logout" style={{ color: "white", textDecoration: "none" }}><Button color="inherit"  >Deconnexion</Button></NavLink>):
+                        (<NavLink to={{ pathname: "/login", state: { referer: '' } }} style={{ color: "white", textDecoration: "none" }}><Button color="inherit" >Connexion</Button></NavLink>)
                     }
                 </Toolbar>
             </AppBar>

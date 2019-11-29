@@ -56,7 +56,7 @@ export default function Login(props) {
 
 
     function postLogin() {
-        const url = "http://localhost:8000/api/login_check";
+        const url = AuthService.getLogin();
         axios.post(url, { username:userName, password:password })
             .then(response =>{
                 if(response.status === 200){
@@ -64,7 +64,8 @@ export default function Login(props) {
                    AuthService.setTokensLocal(token);
                     setAuthTokens(token);
                     setLoggedIn(true);
-                    // console.log(token);
+                    axios.get("http://localhost:8000/api/users?username=" + userName, AuthService.getAuthHeader())
+                        .then(responseU => {AuthService.setUserLocal(responseU.data["hydra:member"][0])});
                     
                 }else{
                     setIsError(true);
@@ -155,20 +156,3 @@ export default function Login(props) {
         </Container>
     );
 }
-
-
-
-// function Login() {
-//     return (
-//         <Card>
-//             <Form>
-//                 <Input type="email" placeholder="email" />
-//                 <Input type="password" placeholder="password" />
-//                 <Button>Sign In</Button>
-//             </Form>
-//             <Link to="/signup">Don't have an account?</Link>
-//         </Card>
-//     );
-// }
-
-// export default Login;

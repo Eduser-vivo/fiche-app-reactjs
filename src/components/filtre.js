@@ -2,6 +2,7 @@ import React from 'react';
 import FiltreForm from './filtreForm';
 import {Link} from 'react-router-dom';
 import Pagination from 'react-js-pagination';
+import AuthService from '../auth/auth'; 
 
 export default class Filtre extends React.Component {
     constructor() {
@@ -24,7 +25,7 @@ export default class Filtre extends React.Component {
         const date2= e.target.elements.date2.value;
         e.preventDefault();
         console.log(date1, date2);  
-        const url = `http://localhost:8000/api/fiches?date[after]=${date1}&date[before]=${date2}&page=1&itemsPerPage=${this.state.itemsCountPerPage}`;
+        const url = `${AuthService.getFiche()}?date[after]=${date1}&date[before]=${date2}&page=1&itemsPerPage=${this.state.itemsCountPerPage}`;
         const response = await fetch(url);
         const data = await response.json();
         const dataF = data["hydra:member"];
@@ -37,7 +38,7 @@ export default class Filtre extends React.Component {
         console.log(`active page is ${pageNumber}`);
        const date1 = this.state.date1;
        const date2 = this.state.date2;
-        const url = `http://localhost:8000/api/fiches?date[after]=${date1}&date[before]=${date2}&page=${pageNumber}&itemsPerPage=${this.state.itemsCountPerPage}`;
+        const url = `${AuthService.getFiche()}?date[after]=${date1}&date[before]=${date2}&page=${pageNumber}&itemsPerPage=${this.state.itemsCountPerPage}`;
         const response = await fetch(url);
         const data = await response.json();
         const dataF = data["hydra:member"];

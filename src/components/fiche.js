@@ -7,7 +7,7 @@ import Button from '@material-ui/core/Button';
 import './../css/fiche.css';
 import {Link } from 'react-router-dom';
 import axios from 'axios';
-
+import AuthService from '../auth/auth';
 
 export default class Fiche extends Component{
  
@@ -84,7 +84,7 @@ const fiche = props.fiche;
 
 
 const deleteFonction = () =>{
-    const url = "http://localhost:8000/api/fiches/"+fiche.id
+    const url = AuthService.getFiche()+fiche.id
     axios.delete(url)
         .then(response => {console.log(response)})
         .catch(error => {console.log(error)});

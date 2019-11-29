@@ -1,7 +1,8 @@
 import React, {Fragment} from 'react';
 import { Link } from 'react-router-dom';
 import Pagination from 'react-js-pagination';
-       
+import AuthService from '../auth/auth'; 
+
 export default class Acceuil extends React.Component{
     constructor(){
         super();
@@ -9,35 +10,38 @@ export default class Acceuil extends React.Component{
             loading: true,
             fiches: [],
             activePage : 1,
-            totalItemsCount : 30,
+            totalItemsCount : 100,
             itemsCountPerPage: 10,
         };
         this.handlePageChange = this.handlePageChange.bind(this);
     }
 
     async UNSAFE_componentWillMount() {
-       const url = "http://localhost:8000/api/fiches?page=1&itemsPerPage=" + this.state.itemsCountPerPage;
-       const response = await fetch(url);
-       const data = await response.json();
-       const dataF = data["hydra:member"];
-     this.setState({ fiches: dataF, loading: false}); 
+       const url = AuthService.getFiche()+"?page=1&itemsPerPage=" + this.state.itemsCountPerPage;
+        const response = await fetch(url, AuthService.getAuthHeader());
+        if(response.status ===200 ){
+            const data = await response.json();
+            const dataF = data["hydra:member"];
+          this.setState({ fiches: dataF, loading: false}); 
+        }
     }
 
  
    async handlePageChange(pageNumber){
         console.log(`active page is ${pageNumber}`);
-       const url = "http://localhost:8000/api/fiches?page=" + pageNumber +"&itemsPerPage="+this.state.itemsCountPerPage;
-       const response = await fetch(url);
-       const data = await response.json();
-       const dataF = data["hydra:member"];
-        this.setState({ 
-            activePage: pageNumber,
-            fiches : dataF,
-            loading: false,
-            totalItemsCount: data["hydra:totalItems"],
-        });
-        console.log(this.state.totalItemsCount);
-        
+       const url = AuthService.getFiche() +"?page=" + pageNumber +"&itemsPerPage="+this.state.itemsCountPerPage;
+       const response = await fetch(url, AuthService.getAuthHeader());
+       if (response.status === 200){
+           const data = await response.json();
+           const dataF = data["hydra:member"];
+            this.setState({ 
+                activePage: pageNumber,
+                fiches : dataF,
+                loading: false,
+                totalItemsCount: data["hydra:totalItems"],
+            });
+       }
+        console.log(this.state.totalItemsCount); 
     }
     
     render(){
