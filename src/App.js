@@ -11,29 +11,44 @@ import Edit from './components/edit';
 import { AuthContext } from './auth/auth';
 import Login from './components/login';
 import Signup from './components/signup';
-
+import AuthService from './auth/auth';
+import Logout from './components/logout';
 
 
 class App extends React.Component {
   constructor(){
     super()
     this.state = {
-      authTokens: null
+      authTokens: null,
+      isLog :false,
+    }
+  }
+
+  UNSAFE_componentWillMount(){
+    const joker = AuthService.getTokensLocal();
+    this.setState({ authTokens: joker });
+    if(joker === null){
+      this.setState({isLog: false});
+    }else if(joker !== null ){
+      this.setState({isLog : true});
     }
   }
 
   render(){
     const setTokens = (data) =>{
-      localStorage.setItem("tokens", JSON.stringify(data));
-      this.setState({authTokens: data});
-    }
+      this.setState({ authTokens: data});
+    } 
+    const authJoker = this.state.authTokens;
+    console.log(authJoker); 
+    const isLog = this.state.isLog;
     return (
-      <AuthContext.Provider value={{authTokens:this.state.authTokens, setAuthTokens: setTokens}} >
+      <AuthContext.Provider value={{ authTokens: authJoker, setAuthTokens: setTokens}} >
         <BrowserRouter>
           <div>
-            <TopBar />
+            <TopBar isLog={isLog} />
             <Switch>
               <Route path="/login" component={Login} />
+              <Route path="/logout" component={Logout} />
               <Route path="/signup" component={Signup} />
               <PrivateRoute path="/" component={Acceuil} exact />
               <PrivateRoute path="/filtre" component={Filtre} />

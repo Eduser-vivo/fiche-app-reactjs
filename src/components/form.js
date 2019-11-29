@@ -51,7 +51,7 @@ export default class Form extends React.Component{
        };
         console.log(data);
         
-        const url = "/fiche-app/public/index.php/api/fiches";
+        const url = "http://localhost:8000/api/fiches";
         axios.post(url, data)
             .then(response => {this.setState({ fiches: response.data, redirection: true})})
             .catch(error => {console.log(error)});

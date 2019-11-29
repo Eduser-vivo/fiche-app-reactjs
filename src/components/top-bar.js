@@ -18,7 +18,9 @@ const useStyles = makeStyles(theme => ({
 
 export default function TopAppBar(props) {
     const classes = useStyles();
-
+    const isLog = props.isLog;
+    console.log(isLog);
+    
     return (
         <div className={classes.root}>
             <AppBar position="static">
@@ -28,7 +30,10 @@ export default function TopAppBar(props) {
                         <NavLink to="/filtre" style={{ color: "white", textDecoration: "none" }}><Button color="inherit"> Filtre des fiches </Button></NavLink>
                         <NavLink to="/nouvelle-fiche" style={{color:"white", textDecoration:"none"}}><Button color="inherit"> Nouvelle fiche </Button></NavLink>      
                     </Typography>
-                    <NavLink to="/login" style={{ color: "white", textDecoration: "none" }}><Button color="inherit">Login</Button></NavLink>
+                    {isLog ?
+                    (<NavLink to="/logout" style={{ color: "white", textDecoration: "none" }}><Button color="inherit">Deconnexion</Button></NavLink>):
+                   (<NavLink to={{ pathname: "/login", state: { referer: '' } }}  style={{ color: "white", textDecoration: "none" }}><Button color="inherit">Connexion</Button></NavLink>)
+                    }
                 </Toolbar>
             </AppBar>
             <br />

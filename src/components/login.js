@@ -12,6 +12,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import { useAuth } from '../auth/auth';
 import axios from 'axios';
+import AuthService from './../auth/auth';
 
 
 
@@ -55,14 +56,15 @@ export default function Login(props) {
 
 
     function postLogin() {
-        const url = "/fiche-app/public/index.php/api/login_check";
+        const url = "http://localhost:8000/api/login_check";
         axios.post(url, { username:userName, password:password })
             .then(response =>{
                 if(response.status === 200){
                     const token = response["data"];
+                   AuthService.setTokensLocal(token);
                     setAuthTokens(token);
                     setLoggedIn(true);
-                    console.log(token);
+                    // console.log(token);
                     
                 }else{
                     setIsError(true);
@@ -76,11 +78,13 @@ export default function Login(props) {
     }
 
     function handleSubmit(e) {
+        localStorage.clear();
         console.log(userName, password);
         e.preventDefault();
     }
 
     return (
+       
         <Container component="main" maxWidth="xs">
             <CssBaseline />
             <div className={classes.paper}>
@@ -88,8 +92,7 @@ export default function Login(props) {
                 </Avatar>
                 <Typography component="h1" variant="h5">
                     Connexion
-        </Typography>
-
+                </Typography>
                 {isError ?
                     <div className="alert alert-dismissible alert-danger" style={{ textAlign: "center"}} >
                         <strong>nom d'utilisateur ou mot de passe incorrect</strong>
@@ -143,7 +146,7 @@ export default function Login(props) {
                         </Grid>
                         <Grid item>
                            Vous n'avez pas de compte ?
-                            <Link to="/signup"> S'inscrire</Link>
+                            <Link to={{pathname: "/signup", state: {referer: ''}}}> S'inscrire</Link>
                         </Grid>
                     </Grid>
                 </form>

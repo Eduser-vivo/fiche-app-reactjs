@@ -15,8 +15,8 @@ export default class Acceuil extends React.Component{
         this.handlePageChange = this.handlePageChange.bind(this);
     }
 
-   async componentDidMount() {
-       const url = "/fiche-app/public/index.php/api/fiches?page=1&itemsPerPage=" + this.state.itemsCountPerPage;
+    async UNSAFE_componentWillMount() {
+       const url = "http://localhost:8000/api/fiches?page=1&itemsPerPage=" + this.state.itemsCountPerPage;
        const response = await fetch(url);
        const data = await response.json();
        const dataF = data["hydra:member"];
@@ -26,7 +26,7 @@ export default class Acceuil extends React.Component{
  
    async handlePageChange(pageNumber){
         console.log(`active page is ${pageNumber}`);
-       const url = "/fiche-app/public/index.php/api/fiches?page=" + pageNumber +"&itemsPerPage="+this.state.itemsCountPerPage;
+       const url = "http://localhost:8000/api/fiches?page=" + pageNumber +"&itemsPerPage="+this.state.itemsCountPerPage;
        const response = await fetch(url);
        const data = await response.json();
        const dataF = data["hydra:member"];

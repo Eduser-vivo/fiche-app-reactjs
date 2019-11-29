@@ -84,7 +84,7 @@ const fiche = props.fiche;
 
 
 const deleteFonction = () =>{
-    const url = "/fiche-app/public/index.php/api/fiches/"+fiche.id
+    const url = "http://localhost:8000/api/fiches/"+fiche.id
     axios.delete(url)
         .then(response => {console.log(response)})
         .catch(error => {console.log(error)});
