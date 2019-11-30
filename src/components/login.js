@@ -56,6 +56,7 @@ export default function Login(props) {
 
 
     function postLogin() {
+        localStorage.clear();
         const url = AuthService.getLogin();
         axios.post(url, { username:userName, password:password })
             .then(response =>{
@@ -79,7 +80,6 @@ export default function Login(props) {
     }
 
     function handleSubmit(e) {
-        localStorage.clear();
         console.log(userName, password);
         e.preventDefault();
     }

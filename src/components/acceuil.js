@@ -10,7 +10,7 @@ export default class Acceuil extends React.Component{
             loading: true,
             fiches: [],
             activePage : 1,
-            totalItemsCount : 100,
+            totalItemsCount : 10,
             itemsCountPerPage: 10,
         };
         this.handlePageChange = this.handlePageChange.bind(this);

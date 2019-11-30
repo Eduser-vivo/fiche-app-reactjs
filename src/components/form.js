@@ -22,7 +22,6 @@ export default class Form extends React.Component{
             motif: '',
             lieu: '',
             dateF: dateInit(),
-            utilisateur_id: AuthService.getUserId(),
             redirection: false,
             fiches: []
         };
@@ -42,7 +41,6 @@ export default class Form extends React.Component{
 
     handleSubmit(event) {
         event.preventDefault();
-        const user = this.state.utilisateur_id;
        const data = {
            signataire : this.state.signataire,
            adresse : this.state.adresse,
@@ -50,8 +48,7 @@ export default class Form extends React.Component{
            montant: parseInt(this.state.montant),
            motif : this.state.motif,
            lieu : this.state.lieu,
-           date : this.state.dateF,
-           utilisateur_id : user,
+           date : this.state.dateF
        };
         console.log(data);
         

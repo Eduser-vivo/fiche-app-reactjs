@@ -1,8 +1,8 @@
 import React, { useState} from 'react';
 
 const FiltreForm = (props)=> {
-    const  [date1, setDate1] = useState('');
-    const  [date2, setDate2] = useState('');
+    const  [date1, setDate1] = useState(props.date1);
+    const  [date2, setDate2] = useState(props.date2);
 
     return(
         <form onSubmit={props.handleSubmit}>

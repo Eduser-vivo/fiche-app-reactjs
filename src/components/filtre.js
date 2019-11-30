@@ -6,12 +6,13 @@ import AuthService from '../auth/auth';
 
 export default class Filtre extends React.Component {
     constructor() {
+        const localTotalpage = JSON.parse(localStorage.getItem("totalpage"));
         super();
         this.state = {
             loading: true,
             fiches:[],
             activePage: 1,
-            totalItemsCount: 30,
+            totalItemsCount: localTotalpage,
             itemsCountPerPage: 10,
             date1: '',
             date2: '',
@@ -19,6 +20,21 @@ export default class Filtre extends React.Component {
         this.handlePageChange = this.handlePageChange.bind(this);
     }
 
+    UNSAFE_componentWillMount(){
+        const localfiche = JSON.parse(localStorage.getItem("fiches"));
+        if(localfiche !== null){     
+            this.setState({
+                fiches:localfiche ,
+                date1: JSON.parse(localStorage.getItem("date1")),
+                date2: JSON.parse(localStorage.getItem("date2")),
+            });
+        }
+        if(this.state.fiches !== null){
+            this.setState({ loading:false})
+        }
+
+        console.log(); 
+    }
 
     handleSubmit = async(e)=>{
         const date1 = e.target.elements.date1.value;
@@ -26,39 +42,47 @@ export default class Filtre extends React.Component {
         e.preventDefault();
         console.log(date1, date2);  
         const url = `${AuthService.getFiche()}?date[after]=${date1}&date[before]=${date2}&page=1&itemsPerPage=${this.state.itemsCountPerPage}`;
-        const response = await fetch(url);
+        const response = await fetch(url, AuthService.getAuthHeader());
         const data = await response.json();
         const dataF = data["hydra:member"];
         console.log(dataF);
-        this.setState({ fiches: dataF, date1: date1, date2:date2, loading: false});
-        console.log(this.state.date2);
+        this.setState({ fiches: dataF, date1: date1, date2:date2, loading: false, totalItemsCount: data["hydra:totalItems"]});
+        localStorage.setItem("fiches", JSON.stringify(dataF));
+        localStorage.setItem("date1", JSON.stringify(date1));
+        localStorage.setItem("date2", JSON.stringify(date2));
+        localStorage.setItem("totalpage", JSON.stringify(this.state.totalItemsCount));
+
+        console.log(this.state.totalItemsCount);
     }
     
     async handlePageChange(pageNumber) {
-        console.log(`active page is ${pageNumber}`);
+       console.log(`active page is ${pageNumber}`);
        const date1 = this.state.date1;
        const date2 = this.state.date2;
-        const url = `${AuthService.getFiche()}?date[after]=${date1}&date[before]=${date2}&page=${pageNumber}&itemsPerPage=${this.state.itemsCountPerPage}`;
-        const response = await fetch(url);
-        const data = await response.json();
-        const dataF = data["hydra:member"];
-        this.setState({
-            activePage: pageNumber,
-            fiches: dataF,
-            loading: false,
-            totalItemsCount: data["hydra:totalItems"],
-        });
+       if(date1 !== '' && date2 !== ''){
+           const url = `${AuthService.getFiche()}?date[after]=${date1}&date[before]=${date2}&page=${pageNumber}&itemsPerPage=${this.state.itemsCountPerPage}`;
+           const response = await fetch(url, AuthService.getAuthHeader());
+           const data = await response.json();
+           const dataF = data["hydra:member"];
+           this.setState({
+               activePage: pageNumber,
+               fiches: dataF,
+               loading: false,
+               totalItemsCount: data["hydra:totalItems"],
+           });
+       }
         console.log(this.state.totalItemsCount);
     }
 
     render() {
        console.log(this.state.fiches);
+     
         return (
             <React.Fragment>
                 <br />
                 <h2 style={{ textAlign:"center"}}><strong><u>LISTES DES DECHARGES DE RECEPTION DE FONDS </u></strong></h2><br />
                 <div className="container">
-                    <FiltreForm handleSubmit={this.handleSubmit} /> 
+                    <FiltreForm handleSubmit={this.handleSubmit} date1={this.state.date1} date2={this.state.date2} /> 
                 </div><br />
                 <div className="container">
                     <table className="table table-hover">
@@ -73,7 +97,7 @@ export default class Filtre extends React.Component {
                                 <th scope="col">afficher une fiche </th>
                             </tr>
                         </thead>
-                        <tbody>{this.state.loading ? (<tr><td>loading...</td></tr>) : (
+                        <tbody>{this.state.loading ? (<tr><td>en attente du filtre...</td></tr>) : (
                             this.state.fiches.map(fiche => (
                                 <tr key={fiche.id} >
                                     <td>{fiche.signataire} </td>
