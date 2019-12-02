@@ -7,8 +7,8 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import AuthService from '../auth/auth';
-import axios from 'axios';
+// import AuthService from '../auth/auth';
+// import axios from 'axios';
 
 
 const useStyles = makeStyles(theme => ({
@@ -43,13 +43,13 @@ export default function SignUp(props) {
     const [password, setPassword] = useState("");
 
     function postUser(){
-        const url = AuthService.getUser();
-        axios.post(url, {username:username, email:email, password:password}, AuthService.getAuthHeader() )
-        .then(response =>{
-            if(response.status === 200){
+        // const url = AuthService.getUser();
+        // axios.post(url, {username:username, email:email, password:password}, AuthService.getAuthHeader() )
+        // .then(response =>{
+        //     if(response.status === 200){
                 
-            }
-        })
+        //     }
+        // })
     }
 
     function handleSubmit(e){

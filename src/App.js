@@ -14,8 +14,6 @@ import Signup from './components/signup';
 import AuthService from './auth/auth';
 import Logout from './components/logout';
 
-
-
 class App extends React.Component {
   constructor(props){
     super(props)
@@ -40,36 +38,27 @@ class App extends React.Component {
     this.checkLog();
   }
   
-  
   handleLogOff(log) {
     this.setState({ isLog: log });
     AuthService.logOut();
     this.checkLog();
   }
-
   handleLogOn(log) {
     this.setState({ isLog: log });
     this.checkLog();
   }
- 
-
   render(){
     const setTokens = (data) =>{
       this.setState({ authTokens: data});
     } 
-
     const authJoker = this.state.authTokens;
     const isLog = this.state.isLog;
-  
-    console.log(isLog);
-
     return (
       <AuthContext.Provider value={{ authTokens: authJoker, setAuthTokens: setTokens}} >
         <BrowserRouter>
           <div>
                <TopBar isLog={isLog} handleLog = {this.handleLogOff.bind(this)} />
             <Switch>
-              
               <Route path="/login" render={(props) => <Login {...props} isAuth={this.handleLogOn.bind(this)}/>} exact />
               <Route path="/logout" component={Logout} exact />
               <PrivateRoute path="/signup" component={Signup} exact />
@@ -86,5 +75,4 @@ class App extends React.Component {
     );
   }
 }
-
 export default App;
