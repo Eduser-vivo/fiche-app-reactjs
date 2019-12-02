@@ -21,7 +21,7 @@ export default class Filtre extends React.Component {
         this.handlePageChange = this.handlePageChange.bind(this);
     }
 
-    UNSAFE_componentWillMount(){
+    componentDidMount(){
         const localfiche = JSON.parse(localStorage.getItem("fiches"));
         if(localfiche !== null){     
             this.setState({
@@ -52,9 +52,12 @@ export default class Filtre extends React.Component {
             localStorage.setItem("date2", JSON.stringify(date2));
             localStorage.setItem("totalpage", JSON.stringify(this.state.totalItemsCount));
         })
-        .catch()
-
-        console.log(this.state.totalItemsCount);
+        .catch(error => {
+            if (error.response.status === 401) {
+                AuthService.tokenExpire();
+                this.props.isAuth(false);
+            }
+        });
     }
     
     async handlePageChange(pageNumber) {
@@ -72,7 +75,12 @@ export default class Filtre extends React.Component {
                   loading: false,
                   totalItemsCount: response["data"]["hydra:totalItems"],
               });
-          }).catch();
+          }).catch(error => {
+               if (error.response.status === 401) {
+                   AuthService.tokenExpire();
+                   this.props.isAuth(false);
+               }
+           });
        }
         console.log(this.state.totalItemsCount);
     }

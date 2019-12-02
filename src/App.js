@@ -2,17 +2,18 @@ import React from 'react';
 import TopBar from './components/top-bar';
 import {BrowserRouter, Route, Switch} from 'react-router-dom';
 import PrivateRoute from './components/PrivateRoute';
+import { AuthContext } from './auth/auth';
 import './App.css';
 import Acceuil from './components/acceuil';
 import Filtre from './components/filtre';
 import Form from './components/form';
 import Fiche from './components/fiche';
 import Edit from './components/edit';
-import { AuthContext } from './auth/auth';
 import Login from './components/login';
 import Signup from './components/signup';
 import AuthService from './auth/auth';
 import Logout from './components/logout';
+import PdfFiche from './components/pdfFiche';
 
 class App extends React.Component {
   constructor(props){
@@ -34,7 +35,7 @@ class App extends React.Component {
     }
   }
 
-  UNSAFE_componentWillMount(){
+  componentDidMount(){
     this.checkLog();
   }
   
@@ -61,12 +62,13 @@ class App extends React.Component {
             <Switch>
               <Route path="/login" render={(props) => <Login {...props} isAuth={this.handleLogOn.bind(this)}/>} exact />
               <Route path="/logout" component={Logout} exact />
+              <Route path="/print" component={PdfFiche} />
               <PrivateRoute path="/signup" component={Signup} exact />
-              <PrivateRoute path="/" component={Acceuil} exact />
-              <PrivateRoute path="/filtre" component={Filtre} exact />
-              <PrivateRoute path="/nouvelle-fiche" component={Form} exact />
-              <PrivateRoute path="/fiche/:id" component={Fiche} exact />
-              <PrivateRoute path="/edit/:id" component={Edit} exact />
+              <PrivateRoute path="/" component={Acceuil} exact isAuth={this.handleLogOn.bind(this)} />} />
+              <PrivateRoute path="/filtre" component={Filtre} exact isAuth={this.handleLogOn.bind(this)}/>
+              <PrivateRoute path="/nouvelle-fiche" component={Form} exact isAuth={this.handleLogOn.bind(this)}/>
+              <PrivateRoute path="/fiche/:id" component={Fiche} exact isAuth={this.handleLogOn.bind(this)} />
+              <PrivateRoute path="/edit/:id" component={Edit} exact isAuth={this.handleLogOn.bind(this)}/>
               <Route component={Error} />
             </Switch>
           </div>

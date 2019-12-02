@@ -88,6 +88,10 @@ export default class Edit extends React.Component{
                 })
             })
             .catch(errors => {
+                    if (errors.response.status === 401) {
+                        AuthService.tokenExpire();
+                        this.props.isAuth(false);
+                    }
                 AuthService.checktokenExpire(errors);
                 if (errors.response.status === 400) {
                     errors.response.data["violations"].forEach(error => {

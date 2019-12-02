@@ -84,7 +84,10 @@ export default class Form extends React.Component{
                 isErrorLieu: false,
                 })})
             .catch(errors => {
-                AuthService.checktokenExpire(errors);
+                    if (errors.response.status === 401) {
+                        AuthService.tokenExpire();
+                        this.props.isAuth(false);
+                    }
                 if (errors.response.status === 400) {
                     errors.response.data["violations"].forEach(error => {
                        

@@ -1,8 +1,8 @@
 import React, {Fragment} from 'react';
-import { Link, Redirect } from 'react-router-dom';
-import Pagination from 'react-js-pagination';
+import { Link } from 'react-router-dom';
 import AuthService from '../auth/auth'; 
 import axios from 'axios';
+import Pagination from 'react-js-pagination';
 
 export default class Acceuil extends React.Component{
     constructor(){
@@ -20,19 +20,20 @@ export default class Acceuil extends React.Component{
     componentDidMount() {
        const url = AuthService.getFiche()+"?page=1&itemsPerPage=" + this.state.itemsCountPerPage;
        axios.get(url, AuthService.getAuthHeader())
-        .then(response =>{
-            
+        .then(response =>{ 
             if(response.status ===200 ){
                 const dataF = response["data"]["hydra:member"];
-                this.setState({ fiches: dataF, loading: false, totalItemsCount: response["data"]["hydra:totalItems"]}); 
+                this.setState({ fiches: dataF, 
+                    loading: false, 
+                    totalItemsCount: response["data"]["hydra:totalItems"]}); 
             }
         })
         .catch(error =>{
            if(error.response.status === 401){
-                console.log("error 401 ");
-              return ( <Redirect to={{pathname: "/login", state:{referer:"/"}}} />)
+               AuthService.tokenExpire();
+               this.props.isAuth(false);
            }
-        })
+        });
     }
 
  
@@ -52,14 +53,15 @@ export default class Acceuil extends React.Component{
             }
         })
         .catch(error =>{
-            if(error.response.status === 401){
-                console.log("edem");
-                
+            if (error.response.status === 401) {
+                AuthService.tokenExpire();
+                this.props.isAuth(false);
             }
         }); 
     }
     
     render(){
+        console.log(this.props);
         
         return(
             <Fragment>
@@ -92,8 +94,9 @@ export default class Acceuil extends React.Component{
                                             <Link to={{
                                                 pathname: `/fiche/${fiche.id}`,
                                                 state: { fiche: fiche, referer: "/"}
-                                            }}
-                                                style={{ color: "white", textDecoration: "none" }}> afficher </Link>
+                                              }}
+                                                style={{ color: "white", textDecoration: "none" }}> afficher 
+                                            </Link>
                                         </button>
                                     </td>
                                 </tr>

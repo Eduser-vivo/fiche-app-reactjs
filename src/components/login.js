@@ -54,10 +54,7 @@ export default function Login(props) {
     const [password, setPassword] = useState("");
     const { setAuthTokens } = useAuth();
     const referer = props.location.state.referer || '/';
-    console.log(props);
-    
-    
-
+ 
     function postLogin() {
         localStorage.clear();
         const url = AuthService.getLogin();
@@ -102,7 +99,7 @@ export default function Login(props) {
                     </div> : " "
                 }
 
-                <form className={classes.form} onSubmit={postLogin}>
+                <form className={classes.form} onSubmit={handleSubmit}>
                     
                     <TextField
                         variant="outlined"
@@ -138,7 +135,7 @@ export default function Login(props) {
                         variant="contained"
                         color="primary"
                         className={classes.submit}
-                        onClick= {handleSubmit}
+                        onClick={postLogin}
                     >
                         Se connecter
           </Button>

@@ -9,15 +9,12 @@ import {Link, Redirect } from 'react-router-dom';
 import axios from 'axios';
 import AuthService from '../auth/auth';
 
+
 export default class Fiche extends Component{
  
     render(){
         const fiche = this.props.location.state.fiche;
         const referer = this.props.location.state.referer;
-        console.log(fiche);
-        console.log(referer);
-        
-        
         return(
             <Fragment>
                 <div className="container">
@@ -86,19 +83,26 @@ export function TopAppBar(props) {
     const fiche = props.fiche;
     const referer = props.referer;
     const [isDelete, setisDelete] = useState(false);
-    console.log(referer);
-    
 
-const deleteFonction = () =>{
-    const url = AuthService.getFiche()+"/"+fiche.id
+    const deleteFonction = () =>{
+        const url = AuthService.getFiche()+"/"+fiche.id
 
-    axios.delete(url, AuthService.getAuthHeader())
-        .then(response => { if (response.status === 204) { setisDelete(true)}})
-        .catch(error => {AuthService.checktokenExpire(error)});
+        axios.delete(url, AuthService.getAuthHeader())
+            .then(response => { if (response.status === 204) { setisDelete(true)}})
+            .catch(error => {
+                if (error.response.status === 401) {
+                    AuthService.tokenExpire();
+                    this.props.isAuth(false);
+                }
+        });
     }
 
     if(isDelete){
         return (<Redirect to={referer} />);
+    }
+
+    const pdfFonction = ()=>{
+      
     }
 
     return (
@@ -115,7 +119,7 @@ const deleteFonction = () =>{
                             > Modifier </Link>
                         </Button>
                         <Button color="inherit" onClick={deleteFonction}> Supprimer </Button>
-                        <Button color="inherit"> Imprimer </Button>
+                        <Button color="inherit" onClick={pdfFonction}> Imprimer </Button>
                     </Typography>
                 </Toolbar>
             </AppBar>

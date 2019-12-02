@@ -8,7 +8,6 @@ export function useAuth(){
     return useContext(AuthContext);
 }
 
-
 const API_BASE_URL = "http://localhost:8000/api/";
 
 class AuthService{
@@ -54,8 +53,8 @@ class AuthService{
         return API_BASE_URL+"users";
     }
 
-    tokenExpire(data){
-        console.log(data);
+    tokenExpire(){
+        this.logOut();
     }
     
 }
