@@ -25,7 +25,19 @@ export default class Edit extends React.Component{
             lieu: fiche.lieu,
             date: dateInit(),
             redirection: false,
-            fiches: []
+            fiches: [],
+            isErrorSignataire: false,
+            isErrorAdresse: false,
+            isErrorCreantier: false,
+            isErrorMontant: false,
+            isErrorMotif: false,
+            isErrorLieu: false,
+            errorSignataire: '',
+            errorAdresse: '',
+            errorCreantier: '',
+            errorMontant: '',
+            errorMotif: '',
+            errorLieu: '',
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -52,86 +64,147 @@ export default class Edit extends React.Component{
             date: this.state.dateF
         };
         console.log(data);
+        this.setState({
+            isErrorSignataire: false,
+            isErrorAdresse: false,
+            isErrorCreantier: false,
+            isErrorMontant: false,
+            isErrorMotif: false,
+            isErrorLieu: false,
+        });
 
-        const url = AuthService.getFiche()+this.state.id;
-        axios.put(url, data)
-            .then(response => {this.setState({ fiches: response.data, redirection: true })})
-            .catch(error => { console.log(error) });
+        const url = AuthService.getFiche()+"/"+this.state.id;
+        axios.put(url, data, AuthService.getAuthHeader())
+            .then(response => {
+                this.setState({
+                    fiches: response.data,
+                    redirection: true,
+                    isErrorSignataire: false,
+                    isErrorAdresse: false,
+                    isErrorCreantier: false,
+                    isErrorMontant: false,
+                    isErrorMotif: false,
+                    isErrorLieu: false,
+                })
+            })
+            .catch(errors => {
+                AuthService.checktokenExpire(errors);
+                if (errors.response.status === 400) {
+                    errors.response.data["violations"].forEach(error => {
+
+                        switch (error.propertyPath) {
+                            case "signataire":
+                                this.setState({ errorSignataire: error.message, isErrorSignataire: true })
+                                break;
+                            case "adresse":
+                                this.setState({ errorAdresse: error.message, isErrorAdresse: true })
+                                break;
+                            case "creantier":
+                                this.setState({ errorCreantier: error.message, isErrorCreantier: true })
+                                break;
+                            case "montant":
+                                this.setState({ errorMontant: error.message, isErrorMontant: true })
+                                break;
+                            case "motif":
+                                this.setState({ errorMotif: error.message, isErrorMotif: true })
+                                break;
+                            case "lieu":
+                                this.setState({ errorLieu: error.message, isErrorLieu: true })
+                                break;
+                            default:
+                                break;
+                        }
+                    });
+                }
+                this.setState({ redirection: false });
+            });
     }
+
+
 
     render(){
         console.log(this.state.id);
         const { fiches } = this.state;
-        console.log(fiches);
         const { redirection } = this.state;
-        if (redirection) {
-            return <Redirect to={{ pathname: `/fiche/${fiches.id}`, state: { fiche: fiches } }} />
-        }
+        const { isErrorSignataire, isErrorAdresse, isErrorCreantier, isErrorMontant, isErrorMotif, isErrorLieu } = this.state;
+        console.log(this.state.isErrorSignataire);
+        const referer = this.props.location.state.referer;
+        console.log(referer);
         
-        return (<div className="container">
-            <br />
-            <h2 style={{ textAlign: 'center' }}><strong><u>DECHARGE DE RECEPTION DE FONDS 1</u></strong></h2><br />
-            <form onSubmit={this.handleSubmit}>
-                <div className="form-group" >
-                    <label>Signataire</label>
-                    <input type="text"
-                        name="signataire"
-                        className="form-control"
-                        value={this.state.signataire}
-                        required
-                        onChange={this.handleChange} />
-                </div>
-                <div className="form-group">
-                    <label>Adresse</label>
-                    <input type="text"
-                        name="adresse"
-                        className="form-control"
-                        value={this.state.adresse}
-                        required
-                        onChange={this.handleChange} />
-                </div>
-                <div className="form-group">
-                    <label>creantier</label>
-                    <input type="text"
-                        name="creantier"
-                        className="form-control"
-                        value={this.state.creantier}
-                        required
-                        onChange={this.handleChange} />
-                </div>
-                <div className="form-group">
-                    <label>Montant</label>
-                    <input type="number"
-                        name="montant"
-                        className="form-control"
-                        value={this.state.montant}
-                        onChange={this.handleChange}
-                        required />
-                </div>
-                <div className="form-group">
-                    <label>Motif</label>
-                    <textarea type="text"
-                        name="motif"
-                        className="form-control"
-                        value={this.state.motif}
-                        required
-                        onChange={this.handleChange} />
-                </div>
-                <div className="form-group">
-                    <label>Lieu</label>
-                    <input type="text"
-                        name="lieu"
-                        className="form-control"
-                        value={this.state.lieu}
-                        required
-                        onChange={this.handleChange} />
-                </div>
-                <input className="btn btn-success" type="submit" value="envoyer" />
-            </form><br />
-        </div>);
+        if (redirection) {
+            return <Redirect to={{ pathname: `/fiche/${fiches.id}`, state: { fiche: fiches, referer: referer } }} />
+        }
+        return (
+            <div className="container">
+                <br />
+                <h2 style={{ textAlign: 'center' }}><strong><u>DECHARGE DE RECEPTION DE FONDS 1</u></strong></h2><br />
+                <form onSubmit={this.handleSubmit}>
+                    <div className="form-group" >
+                        <label className="form-control-label">Signataire</label>
+                        <input type="text"
+                            name="signataire"
+                            className="form-control"
+                            value={this.state.signataire}
+                            required
+                            onChange={this.handleChange} />
+                        {isErrorSignataire && <span className="badge badge-danger"> {this.state.errorSignataire} </span>}
+                    </div>
+                    <div className="form-group">
+                        <label className="form-control-label">Adresse</label>
+                        <input type="text"
+                            name="adresse"
+                            className="form-control"
+                            value={this.state.adresse}
+                            required
+                            onChange={this.handleChange} />
+                        {isErrorAdresse && <span className="badge badge-danger">{this.state.errorAdresse}</span>}
+                    </div>
+                    <div className="form-group">
+                        <label className="form-control-label">creantier</label>
+                        <input type="text"
+                            name="creantier"
+                            className="form-control"
+                            value={this.state.creantier}
+                            required
+                            onChange={this.handleChange} />
+                        {isErrorCreantier && <span className="badge badge-danger">{this.state.errorCreantier}</span>}
+                    </div>
+                    <div className="form-group">
+                        <label className="form-control-label">Montant</label>
+                        <input type="number"
+                            name="montant"
+                            className="form-control"
+                            value={this.state.montant}
+                            onChange={this.handleChange}
+                            required />
+                        {isErrorMontant && <span className="badge badge-danger">{this.state.errorMontant}</span>}
+                    </div>
+                    <div className="form-group">
+                        <label className="form-control-label">Motif</label>
+                        <textarea type="text"
+                            name="motif"
+                            className="form-control"
+                            value={this.state.motif}
+                            required
+                            onChange={this.handleChange} />
+                        {isErrorMotif && <span className="badge badge-danger">{this.state.errorMotif}</span>}
+                    </div>
+                    <div className="form-group">
+                        <label className="form-control-label">Lieu</label>
+                        <input type="text"
+                            name="lieu"
+                            className="form-control"
+                            value={this.state.lieu}
+                            required
+                            onChange={this.handleChange} />
+                        {isErrorLieu && <span className="badge badge-danger">{this.state.errorLieu}</span>}
+                    </div>
+                    <input className="btn btn-success" type="submit" value="envoyer" />
+                </form><br />
+            </div>
+        );
     }
 }
-
 
 
 

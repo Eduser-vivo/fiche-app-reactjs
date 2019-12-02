@@ -3,6 +3,7 @@ import FiltreForm from './filtreForm';
 import {Link} from 'react-router-dom';
 import Pagination from 'react-js-pagination';
 import AuthService from '../auth/auth'; 
+import axios from 'axios';
 
 export default class Filtre extends React.Component {
     constructor() {
@@ -42,15 +43,16 @@ export default class Filtre extends React.Component {
         e.preventDefault();
         console.log(date1, date2);  
         const url = `${AuthService.getFiche()}?date[after]=${date1}&date[before]=${date2}&page=1&itemsPerPage=${this.state.itemsCountPerPage}`;
-        const response = await fetch(url, AuthService.getAuthHeader());
-        const data = await response.json();
-        const dataF = data["hydra:member"];
-        console.log(dataF);
-        this.setState({ fiches: dataF, date1: date1, date2:date2, loading: false, totalItemsCount: data["hydra:totalItems"]});
-        localStorage.setItem("fiches", JSON.stringify(dataF));
-        localStorage.setItem("date1", JSON.stringify(date1));
-        localStorage.setItem("date2", JSON.stringify(date2));
-        localStorage.setItem("totalpage", JSON.stringify(this.state.totalItemsCount));
+        axios.get(url, AuthService.getAuthHeader())
+        .then(response =>{
+            const dataF = response["data"]["hydra:member"];
+            this.setState({ fiches: dataF, date1: date1, date2: date2, loading: false, totalItemsCount: response["data"]["hydra:totalItems"],});
+            localStorage.setItem("fiches", JSON.stringify(dataF));
+            localStorage.setItem("date1", JSON.stringify(date1));
+            localStorage.setItem("date2", JSON.stringify(date2));
+            localStorage.setItem("totalpage", JSON.stringify(this.state.totalItemsCount));
+        })
+        .catch()
 
         console.log(this.state.totalItemsCount);
     }
@@ -61,22 +63,21 @@ export default class Filtre extends React.Component {
        const date2 = this.state.date2;
        if(date1 !== '' && date2 !== ''){
            const url = `${AuthService.getFiche()}?date[after]=${date1}&date[before]=${date2}&page=${pageNumber}&itemsPerPage=${this.state.itemsCountPerPage}`;
-           const response = await fetch(url, AuthService.getAuthHeader());
-           const data = await response.json();
-           const dataF = data["hydra:member"];
-           this.setState({
-               activePage: pageNumber,
-               fiches: dataF,
-               loading: false,
-               totalItemsCount: data["hydra:totalItems"],
-           });
+          axios.get(url, AuthService.getAuthHeader())
+          .then(response =>{
+              const dataF = response["data"]["hydra:member"];
+              this.setState({
+                  activePage: pageNumber,
+                  fiches: dataF,
+                  loading: false,
+                  totalItemsCount: response["data"]["hydra:totalItems"],
+              });
+          }).catch();
        }
         console.log(this.state.totalItemsCount);
     }
 
     render() {
-       console.log(this.state.fiches);
-     
         return (
             <React.Fragment>
                 <br />
@@ -110,7 +111,7 @@ export default class Filtre extends React.Component {
                                         <button className="btn btn-primary btn-sm">
                                             <Link to={{
                                                 pathname: `/fiche/${fiche.id}`,
-                                                state: { fiche: fiche }
+                                                state: { fiche: fiche, referer:"/filtre" }
                                             }}
                                                 style={{ color: "white", textDecoration: "none" }}> afficher </Link>
                                         </button>

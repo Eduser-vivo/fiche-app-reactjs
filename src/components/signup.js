@@ -1,25 +1,15 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import {Link} from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import AuthService from '../auth/auth';
+import axios from 'axios';
 
-
-function Copyright() {
-    return (
-        <Typography variant="body2" color="textSecondary" align="center">
-            {'Copyright © '}
-            {new Date().getFullYear()}
-            {'.'}
-        </Typography>
-    );
-}
 
 const useStyles = makeStyles(theme => ({
     '@global': {
@@ -48,6 +38,24 @@ const useStyles = makeStyles(theme => ({
 
 export default function SignUp(props) {
     const classes = useStyles();
+    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+    function postUser(){
+        const url = AuthService.getUser();
+        axios.post(url, {username:username, email:email, password:password}, AuthService.getAuthHeader() )
+        .then(response =>{
+            if(response.status === 200){
+                
+            }
+        })
+    }
+
+    function handleSubmit(e){
+        e.preventDefault();
+        console.log(username, password, email); 
+    }
 
     return (
         <Container component="main" maxWidth="xs">
@@ -57,8 +65,8 @@ export default function SignUp(props) {
                 </Avatar>
                 <Typography component="h1" variant="h5">
                     Inscription
-        </Typography>
-                <form className={classes.form} >
+                 </Typography>
+                <form className={classes.form} onSubmit={postUser} >
                     <Grid container spacing={2}>
                         
                         <Grid item xs={12} sm={12}>
@@ -66,10 +74,11 @@ export default function SignUp(props) {
                                 variant="outlined"
                                 required
                                 fullWidth
-                                id="lastName"
+                                id="username"
                                 label="Nom d'utilisateur"
-                                name="lastName"
+                                name="username"
                                 autoComplete="lname"
+                                onChange={e=>{setUsername(e.target.value);}}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -81,6 +90,7 @@ export default function SignUp(props) {
                                 label="Adresse email "
                                 name="email"
                                 autoComplete="email"
+                                onChange={e => { setEmail(e.target.value); }}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -93,6 +103,7 @@ export default function SignUp(props) {
                                 type="password"
                                 id="password"
                                 autoComplete="current-password"
+                                onChange={e => { setPassword(e.target.value); }}
                             />
                         </Grid>
                     </Grid>
@@ -102,38 +113,12 @@ export default function SignUp(props) {
                         variant="contained"
                         color="primary"
                         className={classes.submit}
+                        onClick={handleSubmit}
                     >
                        S'inscrire
-          </Button>
-                    <Grid container>
-                        <Grid item>
-                            Vous avez deja un compte ?
-                            <Link to={{pathname: "/login", state: {referer: ''}}} > Se connecter </Link>
-                        </Grid>
-                    </Grid>
+                     </Button>
                 </form>
             </div>
-            <Box mt={5}>
-                <Copyright />
-            </Box>
         </Container>
     );
 }
-
-
-// function Signup() {
-//     return (
-//         <Card>
-//             <Form>
-//                 <Input type="text" placeholder="username" />
-//                 <Input type="email" placeholder="email" />
-//                 <Input type="password" placeholder="password" />
-//                 <Input type="password" placeholder="password again" />
-//                 <Button>Sign Up</Button>
-//             </Form>
-//             <Link to="/login">Already have an account?</Link>
-//         </Card>
-//     );
-// }
-
-// export default Signup;

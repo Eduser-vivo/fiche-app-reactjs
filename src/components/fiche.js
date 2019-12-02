@@ -1,11 +1,11 @@
-import React, {Component, Fragment } from 'react';
+import React, {Component, Fragment , useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import './../css/fiche.css';
-import {Link } from 'react-router-dom';
+import {Link, Redirect } from 'react-router-dom';
 import axios from 'axios';
 import AuthService from '../auth/auth';
 
@@ -13,12 +13,15 @@ export default class Fiche extends Component{
  
     render(){
         const fiche = this.props.location.state.fiche;
+        const referer = this.props.location.state.referer;
         console.log(fiche);
+        console.log(referer);
+        
         
         return(
             <Fragment>
                 <div className="container">
-                    <TopAppBar fiche={fiche} />
+                    <TopAppBar fiche={fiche} referer={referer} />
                 </div>
                 <div className="container" style={{width:"700px"}}>
                     <div className="container">
@@ -80,15 +83,23 @@ const useStyles = makeStyles(theme => ({
 
 export function TopAppBar(props) {
     const classes = useStyles();
-const fiche = props.fiche;
-
+    const fiche = props.fiche;
+    const referer = props.referer;
+    const [isDelete, setisDelete] = useState(false);
+    console.log(referer);
+    
 
 const deleteFonction = () =>{
-    const url = AuthService.getFiche()+fiche.id
-    axios.delete(url)
-        .then(response => {console.log(response)})
-        .catch(error => {console.log(error)});
-}
+    const url = AuthService.getFiche()+"/"+fiche.id
+
+    axios.delete(url, AuthService.getAuthHeader())
+        .then(response => { if (response.status === 204) { setisDelete(true)}})
+        .catch(error => {AuthService.checktokenExpire(error)});
+    }
+
+    if(isDelete){
+        return (<Redirect to={referer} />);
+    }
 
     return (
         <div className={classes.root}>
@@ -98,7 +109,7 @@ const deleteFonction = () =>{
                         <Button color="inherit">
                             <Link to={{
                                 pathname: `/edit/${fiche.id}`,
-                                state: {fiche:fiche}
+                                state: {fiche:fiche, referer:referer}
                             }}
                             style={{ color: "white", textDecoration: "none" }}
                             > Modifier </Link>

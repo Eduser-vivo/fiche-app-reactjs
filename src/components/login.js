@@ -5,7 +5,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
-import {Link, Redirect} from 'react-router-dom';
+import { Link, Redirect} from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
@@ -13,6 +13,7 @@ import Container from '@material-ui/core/Container';
 import { useAuth } from '../auth/auth';
 import axios from 'axios';
 import AuthService from './../auth/auth';
+
 
 
 
@@ -53,7 +54,9 @@ export default function Login(props) {
     const [password, setPassword] = useState("");
     const { setAuthTokens } = useAuth();
     const referer = props.location.state.referer || '/';
-
+    console.log(props);
+    
+    
 
     function postLogin() {
         localStorage.clear();
@@ -64,10 +67,9 @@ export default function Login(props) {
                     const token = response["data"];
                    AuthService.setTokensLocal(token);
                     setAuthTokens(token);
-                    setLoggedIn(true);
-                    axios.get("http://localhost:8000/api/users?username=" + userName, AuthService.getAuthHeader())
-                        .then(responseU => {AuthService.setUserLocal(responseU.data["hydra:member"][0])});
-                    
+                    setLoggedIn(true); 
+                    AuthService.setLogLocal(true);
+                    props.isAuth(true);
                 }else{
                     setIsError(true);
                 }
@@ -96,11 +98,12 @@ export default function Login(props) {
                 </Typography>
                 {isError ?
                     <div className="alert alert-dismissible alert-danger" style={{ textAlign: "center"}} >
-                        <strong>nom d'utilisateur ou mot de passe incorrect</strong>
+                        nom d'utilisateur ou mot de passe incorrect
                     </div> : " "
                 }
 
-                <form className={classes.form} onSubmit={handleSubmit}>
+                <form className={classes.form} onSubmit={postLogin}>
+                    
                     <TextField
                         variant="outlined"
                         margin="normal"
@@ -135,19 +138,15 @@ export default function Login(props) {
                         variant="contained"
                         color="primary"
                         className={classes.submit}
-                        onClick= {postLogin}
+                        onClick= {handleSubmit}
                     >
                         Se connecter
           </Button>
                     <Grid container>
-                        <Grid item xs>
+                        <Grid item>
                             <Link to="">
                                 Mot de passe oublier?
                              </Link>
-                        </Grid>
-                        <Grid item>
-                           Vous n'avez pas de compte ?
-                            <Link to={{pathname: "/signup", state: {referer: ''}}}> S'inscrire</Link>
                         </Grid>
                     </Grid>
                 </form>

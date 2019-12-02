@@ -1,7 +1,8 @@
 import React, {Fragment} from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import Pagination from 'react-js-pagination';
 import AuthService from '../auth/auth'; 
+import axios from 'axios';
 
 export default class Acceuil extends React.Component{
     constructor(){
@@ -16,36 +17,50 @@ export default class Acceuil extends React.Component{
         this.handlePageChange = this.handlePageChange.bind(this);
     }
 
-    async UNSAFE_componentWillMount() {
+    componentDidMount() {
        const url = AuthService.getFiche()+"?page=1&itemsPerPage=" + this.state.itemsCountPerPage;
-        const response = await fetch(url, AuthService.getAuthHeader());
-        if(response.status ===200 ){
-            const data = await response.json();
-            const dataF = data["hydra:member"];
-          this.setState({ fiches: dataF, loading: false}); 
-        }
+       axios.get(url, AuthService.getAuthHeader())
+        .then(response =>{
+            
+            if(response.status ===200 ){
+                const dataF = response["data"]["hydra:member"];
+                this.setState({ fiches: dataF, loading: false, totalItemsCount: response["data"]["hydra:totalItems"]}); 
+            }
+        })
+        .catch(error =>{
+           if(error.response.status === 401){
+                console.log("error 401 ");
+              return ( <Redirect to={{pathname: "/login", state:{referer:"/"}}} />)
+           }
+        })
     }
 
  
-   async handlePageChange(pageNumber){
+     handlePageChange(pageNumber){
         console.log(`active page is ${pageNumber}`);
        const url = AuthService.getFiche() +"?page=" + pageNumber +"&itemsPerPage="+this.state.itemsCountPerPage;
-       const response = await fetch(url, AuthService.getAuthHeader());
-       if (response.status === 200){
-           const data = await response.json();
-           const dataF = data["hydra:member"];
-            this.setState({ 
-                activePage: pageNumber,
-                fiches : dataF,
-                loading: false,
-                totalItemsCount: data["hydra:totalItems"],
-            });
-       }
-        console.log(this.state.totalItemsCount); 
+       axios.get(url, AuthService.getAuthHeader())
+        .then(response =>{
+            if (response.status === 200){
+                const dataF = response["data"]["hydra:member"];
+                 this.setState({ 
+                     activePage: pageNumber,
+                     fiches : dataF,
+                     loading: false,
+                     totalItemsCount: response["data"]["hydra:totalItems"],
+                 });
+            }
+        })
+        .catch(error =>{
+            if(error.response.status === 401){
+                console.log("edem");
+                
+            }
+        }); 
     }
     
     render(){
-      
+        
         return(
             <Fragment>
                 <br />
@@ -76,7 +91,7 @@ export default class Acceuil extends React.Component{
                                         <button className="btn btn-primary btn-sm">
                                             <Link to={{
                                                 pathname: `/fiche/${fiche.id}`,
-                                                state: { fiche: fiche }
+                                                state: { fiche: fiche, referer: "/"}
                                             }}
                                                 style={{ color: "white", textDecoration: "none" }}> afficher </Link>
                                         </button>
