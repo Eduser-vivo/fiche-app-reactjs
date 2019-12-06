@@ -10,6 +10,7 @@ import axios from 'axios';
 import AuthService from '../auth/auth';
 
 
+
 export default class Fiche extends Component{
  
     render(){
@@ -101,10 +102,6 @@ export function TopAppBar(props) {
         return (<Redirect to={referer} />);
     }
 
-    const pdfFonction = ()=>{
-      
-    }
-
     return (
         <div className={classes.root}>
             <AppBar position="static">
@@ -119,9 +116,9 @@ export function TopAppBar(props) {
                             > Modifier </Link>
                         </Button>
                         <Button color="inherit" onClick={deleteFonction}> Supprimer </Button>
-                        <Button color="inherit" onClick={pdfFonction}> Imprimer </Button>
+                        <Button color="inherit"><Link to={{ pathname: "/print", state: { fiche: fiche, referer: referer } }} > Imprimer</Link> </Button>
                     </Typography>
-                </Toolbar>
+                </Toolbar> 
             </AppBar>
             <br />
         </div>

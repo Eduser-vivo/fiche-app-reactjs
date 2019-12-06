@@ -15,12 +15,13 @@ import AuthService from './auth/auth';
 import Logout from './components/logout';
 import PdfFiche from './components/pdfFiche';
 
+
 class App extends React.Component {
   constructor(props){
     super(props)
     this.state = {
-      authTokens:null,
-      isLog :false,
+      authTokens: AuthService.getTokensLocal(),
+      isLog :AuthService.getLogLocal(),
     }
     this.checkLog = this.checkLog.bind(this);
   }
@@ -54,21 +55,23 @@ class App extends React.Component {
     } 
     const authJoker = this.state.authTokens;
     const isLog = this.state.isLog;
+    console.log(isLog);
+    
     return (
       <AuthContext.Provider value={{ authTokens: authJoker, setAuthTokens: setTokens}} >
         <BrowserRouter>
           <div>
                <TopBar isLog={isLog} handleLog = {this.handleLogOff.bind(this)} />
             <Switch>
-              <Route path="/login" render={(props) => <Login {...props} isAuth={this.handleLogOn.bind(this)}/>} exact />
-              <Route path="/logout" component={Logout} exact />
-              <Route path="/print" component={PdfFiche} />
               <PrivateRoute path="/signup" component={Signup} exact />
               <PrivateRoute path="/" component={Acceuil} exact isAuth={this.handleLogOn.bind(this)} />} />
               <PrivateRoute path="/filtre" component={Filtre} exact isAuth={this.handleLogOn.bind(this)}/>
               <PrivateRoute path="/nouvelle-fiche" component={Form} exact isAuth={this.handleLogOn.bind(this)}/>
               <PrivateRoute path="/fiche/:id" component={Fiche} exact isAuth={this.handleLogOn.bind(this)} />
               <PrivateRoute path="/edit/:id" component={Edit} exact isAuth={this.handleLogOn.bind(this)}/>
+              <Route path="/login" render={(props) => <Login {...props} isAuth={this.handleLogOn.bind(this)}/>} exact />
+              <Route path="/logout" component={Logout} exact />
+              <Route path="/print" component={PdfFiche} />
               <Route component={Error} />
             </Switch>
           </div>
